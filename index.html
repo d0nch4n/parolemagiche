@@ -640,27 +640,27 @@
             animation: none;
         }
         
-        /* Lettere che cadono migliorate */
+        /* Lettere che cadono migliorate - RIDOTTE PER IPAD */
         .falling-letter {
             position: absolute !important;
-            font-size: 80px !important;
+            font-size: 60px !important;
             font-weight: 700 !important;
             color: white !important;
-            text-shadow: 4px 4px 8px rgba(0,0,0,0.3) !important;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3) !important;
             z-index: 20 !important;
-            padding: 15px 25px !important;
-            border-radius: 25px !important;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3),
-                        inset 0 2px 5px rgba(255,255,255,0.5) !important;
-            border: 3px solid rgba(255,255,255,0.3) !important;
+            padding: 10px 18px !important;
+            border-radius: 20px !important;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3),
+                        inset 0 2px 4px rgba(255,255,255,0.5) !important;
+            border: 2px solid rgba(255,255,255,0.3) !important;
         }
         
         .falling-letter::before {
             content: '✨';
             position: absolute;
-            top: -10px;
-            right: -10px;
-            font-size: 30px;
+            top: -8px;
+            right: -8px;
+            font-size: 24px;
             animation: twinkle 1s ease-in-out infinite;
         }
         
@@ -1360,8 +1360,8 @@
             }
             
             .falling-letter {
-                font-size: 64px !important;
-                padding: 12px 20px !important;
+                font-size: 50px !important;
+                padding: 8px 15px !important;
             }
             
             .feedback {
@@ -1430,6 +1430,11 @@
             
             .unicorn {
                 font-size: 50px;
+            }
+            
+            .falling-letter {
+                font-size: 45px !important;
+                padding: 6px 12px !important;
             }
         }
     </style>
@@ -1908,8 +1913,15 @@
                     document.getElementById('score').style.animation = '';
                 }, 500);
                 
-                showFeedback('BRAVISSIMO! 🎉', true);
+                showFeedback('BRAVA AMI! 🎉', true);
                 dropLetters();
+                
+                // CORREZIONE: Aumento del tempo totale per dare più tempo al coniglietto
+                const letterDropTime = 5000; // Tempo per far cadere tutte le lettere
+                const timePerLetter = 600; // Ridotto da 800 a 600 per lettere più vicine
+                const safetyMargin = 2000; // Margine di sicurezza aumentato
+                const collectionTime = currentWord.length * timePerLetter + safetyMargin;
+                const totalTime = letterDropTime + collectionTime;
                 
                 // Il coniglietto inizia a raccogliere dopo che tutte le lettere sono atterrate
                 setTimeout(() => {
@@ -1917,20 +1929,25 @@
                         // Callback: prossima parola solo DOPO che il coniglietto ha finito
                         setTimeout(() => nextWord(), 1000);
                     });
-                }, 5000);
+                }, letterDropTime);
+                
+                // Riabilita i controlli solo dopo che tutto è finito
+                disableControls();
+                setTimeout(() => {
+                    if (gameActive) enableControls();
+                }, totalTime + 1000);
             } else {
                 // Risposta sbagliata
-                showFeedback('RIPROVA! 😊', false);
+                showFeedback('OH NO! 😊', false);
                 showCorrectWord();
                 
-                setTimeout(() => nextWord(), 4000);
+                // Disabilita controlli durante il feedback
+                disableControls();
+                setTimeout(() => {
+                    if (gameActive) enableControls();
+                    nextWord();
+                }, 4000);
             }
-            
-            // Disabilita controlli durante il feedback
-            disableControls();
-            setTimeout(() => {
-                if (gameActive) enableControls();
-            }, answer === currentWord ? 12000 : 3500); // Aumentato il tempo per risposta corretta
         }
 
         function disableControls() {
@@ -1965,7 +1982,7 @@
         function dropLetters() {
             const letters = currentWord.split('');
             const centerX = window.innerWidth / 2;
-            const letterSpacing = 90;
+            const letterSpacing = 70; // Ridotto da 90 a 70 per lettere più compatte
             const startX = centerX - ((letters.length - 1) * letterSpacing / 2);
             
             letters.forEach((letter, index) => {
@@ -1996,17 +2013,17 @@
                         position: 'absolute',
                         left: finalX + 'px',
                         top: '-100px',
-                        fontSize: '80px',
+                        fontSize: '60px',
                         fontWeight: '700',
                         color: 'white',
-                        textShadow: '4px 4px 8px rgba(0,0,0,0.3)',
+                        textShadow: '3px 3px 6px rgba(0,0,0,0.3)',
                         zIndex: '20',
                         background: colors[Math.floor(Math.random() * colors.length)],
                         backgroundSize: '200% 200%',
-                        padding: '15px 25px',
-                        borderRadius: '25px',
-                        boxShadow: '0 8px 25px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.5)',
-                        border: '3px solid rgba(255,255,255,0.3)',
+                        padding: '10px 18px',
+                        borderRadius: '20px',
+                        boxShadow: '0 6px 20px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.5)',
+                        border: '2px solid rgba(255,255,255,0.3)',
                         opacity: '1',
                         visibility: 'visible',
                         display: 'block',
@@ -2112,10 +2129,11 @@
                                 letter.remove();
                                 currentLetter++;
                                 
-                                setTimeout(() => hopToNextLetter(), 250);
+                                // CORREZIONE: Ridotto il delay tra una lettera e l'altra
+                                setTimeout(() => hopToNextLetter(), 200);
                             }, 300);
-                        }, 300);
-                    }, 250);
+                        }, 200);
+                    }, 200);
                 } else {
                     // Tutte le lettere raccolte, torna alla posizione iniziale
                     console.log(`Coniglietto ha finito di raccogliere tutte le lettere, torna alla posizione iniziale`);
